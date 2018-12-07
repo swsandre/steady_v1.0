@@ -27,3 +27,6 @@ hs_err_pid*
 
 # iml file
 steady_v1.0.iml
+
+# bin files
+/out/
