@@ -1,4 +1,9 @@
 package swshahn.com.steady.main;
+import swshahn.com.steady.database.DatabaseConnection;
+
+import java.sql.Connection;
+
+import static swshahn.com.steady.database.DatabaseConnection.*;
 
 /**
  * Author: Andre Hahn
@@ -10,6 +15,8 @@ package swshahn.com.steady.main;
 
 public class SteadyMain {
     public static void main(String args[]){
+
         System.out.println("Steady - Accounting Application");
+        Connection con = getDBConnection();
     }
 }
