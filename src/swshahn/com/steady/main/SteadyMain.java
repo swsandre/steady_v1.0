@@ -1,5 +1,6 @@
 package swshahn.com.steady.main;
 import swshahn.com.steady.database.DatabaseConnection;
+import swshahn.com.steady.database.DatabaseReader;
 
 import java.sql.Connection;
 
@@ -15,8 +16,8 @@ import static swshahn.com.steady.database.DatabaseConnection.*;
 
 public class SteadyMain {
     public static void main(String args[]){
-
         System.out.println("Steady - Accounting Application");
-        Connection con = getDBConnection();
+        DatabaseReader dbr = new DatabaseReader();
+        dbr.getInvoiceByNumber(1);
     }
 }

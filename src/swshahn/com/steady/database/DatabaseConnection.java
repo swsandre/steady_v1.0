@@ -19,25 +19,37 @@ public class DatabaseConnection {
     private static String url = "jdbc:postgresql://localhost:5432/steady_dev";
     private static String username = "steady_user";
     private static String password = "start123";
-    private static Connection con;
+    private static Connection con = null;
 
     /**
      * Creates a static connection object to postgresql.
      * Return: DatabaseConnection object
      */
-    public static Connection getDBConnection(){
-        if(con != null) {
-            return con;
-        } else {
-            try {
-                con = DriverManager.getConnection(url, username, password);
-                System.out.println("Connection established.");
+    static Connection createPostgreSQLConnection() {
+        try {
+            con = DriverManager.getConnection(url, username, password);
+            System.out.println("Connection established. 1");
 
-            } catch (SQLException e) {
-                System.out.println("Connection failed.");
-                e.printStackTrace();
-            }
-            return con;
+        } catch (SQLException e) {
+            System.out.println("Connection failed. 1");
+            e.printStackTrace();
+        }
+        return con;
+    }
+
+    public static Connection getConnection(){
+        return createPostgreSQLConnection();
+    }
+
+    public Boolean connectionAvailable() {
+        return con != null;
+    }
+
+    public void closeConnection(){
+        try {
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
