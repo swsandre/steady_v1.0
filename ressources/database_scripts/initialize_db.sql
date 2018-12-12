@@ -13,8 +13,8 @@ DROP DATABASE IF EXISTS steady_dev;
 DROP USER IF EXISTS steady_user;
 
 -- Create database object user and database
-CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 1 PASSWORD 'start123';
-CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 1;
+CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 2 PASSWORD 'start123';
+CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 2;
 
 -- Switch to database steady_dev
 \c steady_dev
@@ -41,5 +41,8 @@ gross_amount decimal(12,2) NOT NULL
 );
 
 -- Inserting example data
-\copy invoice (id, inv_num,inv_date,inv_type,total) from './invoices.csv' CSV;
-\copy lineitem (id, invoice_id,line_num,net_amount,vat,gross_amount) from './lineitems.csv' CSV;
+\copy invoice (id, inv_num,inv_date,inv_type,total) from '/projects/steady_v1.0/ressources/example_data/invoices.csv' CSV;
+\copy lineitem (id, invoice_id,line_num,net_amount,vat,gross_amount) from '/projects/steady_v1.0/ressources/example_data/lineitems.csv' CSV;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE invoice TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE lineitem TO steady_user;
