@@ -7,18 +7,53 @@
 -- Start psql with the option -s for single-step mode
 -- run this script with "\i pathto/initialize_db.sql"
 
--- Delete Objects if they already exist
+
+\echo "---------------------------------------------------------------------------------------"
+\echo "This script initializes the development database"
+\echo "Starting ..."
+\echo "INFO: Connecting to postgres"
+\c postgres
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Drop database steady_dev if exists"
+\echo "EXECUTE: DROP DATABASE IF EXISTS steady_dev;"
 DROP DATABASE IF EXISTS steady_dev;
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Drop user steady_user if exists"
+\echo "EXECUT: DROP USER IF EXISTS steady_user;"
 DROP USER IF EXISTS steady_user;
 
--- Create database object user and database
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Create user steady_user"
+\echo "EXECUTE: CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 2 PASSWORD 'start123';"
 CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 2 PASSWORD 'start123';
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Create database steady_dev"
+\echo "EXECUTE: CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 2;"
 CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 2;
 
--- Switch to database steady_dev
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Connecting to steady_dev"
 \c steady_dev
 
--- Create type
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating type invtype"
+\echo "EXECUTE: CREATE TYPE invtype AS ENUM ('hotel', 'train', 'local train', 'cab', 'office supplies', 'other');"
 CREATE TYPE invtype AS ENUM ('hotel', 'train', 'local train', 'cab', 'office supplies', 'other');
 
 -- Create tables
