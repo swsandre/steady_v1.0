@@ -36,6 +36,12 @@ public class DatabaseReader {
                 while(rs.next()){
                     System.out.print("Column 1 returned ");
                     System.out.println(rs.getString(1));
+                    System.out.println("Column 2 returned ");
+                    System.out.println(rs.getString(2));
+                    System.out.println("Column 3 returned ");
+                    System.out.println(rs.getString(3));
+                    System.out.println("Column 4 returned ");
+                    System.out.println(rs.getString(4));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

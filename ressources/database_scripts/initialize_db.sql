@@ -4,7 +4,6 @@
 -- Changes:
 -- 08.12.2018 Andre Hahn - Initial creation. Create table invoice, lineitem. Populating these tables with copy commands.
 
-
 -- Start psql with the option -s for single-step mode
 -- run this script with "\i pathto/initialize_db.sql"
 
