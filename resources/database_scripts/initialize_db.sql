@@ -12,6 +12,7 @@
 \echo "This script initializes the development database"
 \echo "Starting ..."
 \echo "INFO: Connecting to postgres"
+\echo "EXECUTE: \c postgres"
 \c postgres
 
 \echo
@@ -47,6 +48,7 @@ CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 2;
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Connecting to steady_dev"
+\echo "EXECUTE: \c steady_dev"
 \c steady_dev
 
 \echo
@@ -56,7 +58,18 @@ CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 2;
 \echo "EXECUTE: CREATE TYPE invtype AS ENUM ('hotel', 'train', 'local train', 'cab', 'office supplies', 'other');"
 CREATE TYPE invtype AS ENUM ('hotel', 'train', 'local train', 'cab', 'office supplies', 'other');
 
--- Create tables
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating table invoice"
+\echo "EXECUTE: CREATE TABLE invoice ("
+\echo "         id int PRIMARY KEY,"
+\echo "         inv_num varchar(80) NOT NULL,"
+\echo "         inv_date date NOT NULL,"
+\echo "         inv_type invtype NOT NULL,"
+\echo "         total decimal(12,2) NOT NULL"
+\echo "         );"
 CREATE TABLE invoice (
 id int PRIMARY KEY,
 inv_num varchar(80) NOT NULL,
