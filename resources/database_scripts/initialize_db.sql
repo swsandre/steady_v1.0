@@ -83,10 +83,31 @@ CREATE TYPE web_type AS ENUM ('Webseite', 'Skype', 'Messenger', 'Blog', 'Twitter
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating enum type title_type"
+\echo "EXECUTE: CREATE TYPE title_type AS ENUM ('Herr', 'Frau');"
+CREATE TYPE title_type AS ENUM ('Herr', 'Frau');
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating enum type cop_type"
+\echo "EXECUTE: CREATE TYPE cop_type AS ENUM ('0 T: Zahlbar sofort, rein netto');"
+CREATE TYPE cop_type AS ENUM ('0 T: Zahlbar sofort, rein netto');
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating enum type cod_type"
+\echo "EXECUTE: CREATE TYPE cod_type AS ENUM ('Lieferung frei Haus.');"
+CREATE TYPE cod_type AS ENUM ('Lieferung frei Haus.');
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Creating table countries"
 \echo "EXECUTE: CREATE TABLE countries ("
 \echo "         id SERIAL PRIMARY KEY,"
-\echo "         code VARCHAR(2) NOT NULL,
+\echo "         code VARCHAR(2) NOT NULL,"
 \echo "         country VARCHAR(32) NOT NULL,"
 \echo "         creuser VARCHAR(8) NOT NULL,"
 \echo "         credat TIMESTAMP NOT NULL DEFAULT NOW(),"
@@ -106,9 +127,62 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating table currencies"
+\echo "EXECUTE: CREATE TABLE currencies ("
+\echo "         id SERIAL PRIMARY KEY,"
+\echo "         code CHAR(3) NOT NULL,"
+\echo "         currency VARCHAR(32) NOT NULL,"
+\echo "         creuser VARCHAR(8) NOT NULL,"
+\echo "         credat TIMESTAMP NOT NULL DEFAULT NOW(),"
+\echo "         lmuser VARCHAR(8) NOT NULL,"
+\echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
+\echo "         );"
+CREATE TABLE currencies (
+id SMALLSERIAL PRIMARY KEY,
+code CHAR(3) NOT NULL,
+currency VARCHAR(32) NOT NULL,
+creuser VARCHAR(8) NOT NULL,
+credat TIMESTAMP NOT NULL DEFAULT NOW(),
+lmuser VARCHAR(8) NOT NULL,
+lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating table clients"
+\echo "EXECUTE: CREATE TABLE clients ("
+\echo "         id SERIAL PRIMARY KEY,"
+\echo "         name VARCHAR(128) NOT NULL,"
+\echo "         country_id SMALLINT NOT NULL REFERENCES countries (id),"
+\echo "         language VARCHAR(32) NOT NULL,"
+\echo "         currency_id SMALLINT NOT NULL REFERENCES currencies (id),"
+\echo "         timezone VARCHAR(64) NOT NULL,"
+\echo "         creuser VARCHAR(8) NOT NULL,"
+\echo "         credat TIMESTAMP NOT NULL DEFAULT NOW(),"
+\echo "         lmuser VARCHAR(8) NOT NULL,"
+\echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
+\echo "         );"
+CREATE TABLE clients (
+id SERIAL PRIMARY KEY,
+name VARCHAR(128) NOT NULL,
+country_id SMALLINT NOT NULL REFERENCES countries (id),
+language VARCHAR(32) NOT NULL,
+currency_id SMALLINT NOT NULL REFERENCES currencies (id),
+timezone VARCHAR(64) NOT NULL, -- Wie sieht der Wert in diesem Feld aus?
+creuser VARCHAR(8) NOT NULL,
+credat TIMESTAMP NOT NULL DEFAULT NOW(),
+lmuser VARCHAR(8) NOT NULL,
+lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Creating table contacts"
 \echo "EXECUTE: CREATE TABLE contacts ("
 \echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         note TEXT,"
 \echo "         customerid VARCHAR(10),"
 \echo "         supplierid VARCHAR(10),"
@@ -120,9 +194,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts (
 id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 note TEXT,
-customerid VARCHAR(10),
-supplierid VARCHAR(10),
+customerid VARCHAR(10),   -- customerid must be generated. Must be mandant specific.
+supplierid VARCHAR(10),   -- supplierid must be generated. Must be mandant specific.
 cidatsupplier VARCHAR(10),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -133,9 +208,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Creating table address"
-\echo "EXECUTE: CREATE TABLE address ("
+\echo "INFO: Creating table addresses"
+\echo "EXECUTE: CREATE TABLE addresses ("
 \echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         type addr_type NOT NULL,"
 \echo "         addr_additional VARCHAR(20),"
 \echo "         street_postbox VARCHAR(32),"
@@ -148,8 +224,9 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         lmuser VARCHAR(8) NOT NULL,"
 \echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
 \echo "         );"
-CREATE TABLE address (
+CREATE TABLE addresses (
 id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 type addr_type NOT NULL,
 addr_additional VARCHAR(20),
 street_postbox VARCHAR(32),
@@ -166,9 +243,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Creating table callnumber"
-\echo "EXECUTE: CREATE TABLE callnumber ("
+\echo "INFO: Creating table callnumbers"
+\echo "EXECUTE: CREATE TABLE callnumbers ("
 \echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         type callnumber_type NOT NULL,"
 \echo "         number VARCHAR(16) NOT NULL,"
 \echo "         contact_id INTEGER NOT NULL REFERENCES contacts (id),"
@@ -177,8 +255,9 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         lmuser VARCHAR(8) NOT NULL,"
 \echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
 \echo "         );"
-CREATE TABLE callnumber (
+CREATE TABLE callnumbers (
 id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 type callnumber_type NOT NULL,
 number VARCHAR(16) NOT NULL,
 contact_id INTEGER NOT NULL REFERENCES contacts (id),
@@ -191,9 +270,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Creating table email"
-\echo "EXECUTE: CREATE TABLE email ("
+\echo "INFO: Creating table emails"
+\echo "EXECUTE: CREATE TABLE emails ("
 \echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         type email_type NOT NULL,"
 \echo "         email VARCHAR(32) NOT NULL,"
 \echo "         contact_id INTEGER NOT NULL REFERENCES contacts (id),"
@@ -202,8 +282,9 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         lmuser VARCHAR(8) NOT NULL,"
 \echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
 \echo "         );"
-CREATE TABLE email (
+CREATE TABLE emails (
 id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 type email_type NOT NULL,
 email VARCHAR(32) NOT NULL,
 contact_id INTEGER NOT NULL REFERENCES contacts (id),
@@ -216,9 +297,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Creating table web"
-\echo "EXECUTE: CREATE TABLE web ("
+\echo "INFO: Creating table webadresses"
+\echo "EXECUTE: CREATE TABLE webadresses ("
 \echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         type email_type NOT NULL,"
 \echo "         email VARCHAR(32) NOT NULL,"
 \echo "         contact_id INTEGER NOT NULL REFERENCES contacts (id),"
@@ -227,8 +309,9 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         lmuser VARCHAR(8) NOT NULL,"
 \echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
 \echo "         );"
-CREATE TABLE web (
+CREATE TABLE webadresses (
 id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 type email_type NOT NULL,
 email VARCHAR(32) NOT NULL,
 contact_id INTEGER NOT NULL REFERENCES contacts (id),
@@ -241,9 +324,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Creating bankaccount"
-\echo "EXECUTE: CREATE TABLE bankaccount ("
+\echo "INFO: Creating table bankaccounts"
+\echo "EXECUTE: CREATE TABLE bankaccounts ("
 \echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         iban VARCHAR(34) NOT NULL,"
 \echo "         bic VARCHAR(11) NOT NULL,"
 \echo "         contact_id INTEGER NOT NULL REFERENCES contacts (id),"
@@ -252,8 +336,9 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         lmuser VARCHAR(8) NOT NULL,"
 \echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
 \echo "         );"
-CREATE TABLE bankaccount (
+CREATE TABLE bankaccounts (
 id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 iban VARCHAR(34) NOT NULL,
 bic VARCHAR(11) NOT NULL,
 contact_id INTEGER NOT NULL REFERENCES contacts (id),
@@ -266,9 +351,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Creating company"
-\echo "EXECUTE: CREATE TABLE company ("
+\echo "INFO: Creating table companies"
+\echo "EXECUTE: CREATE TABLE compaies ("
 \echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         name VARCHAR(32) NOT NULL,"
 \echo "         taxnumber VARCHAR(13),"
 \echo "         salestaxid VARCHAR(14),"
@@ -278,11 +364,104 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         lmuser VARCHAR(8) NOT NULL,"
 \echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
 \echo "         );"
-CREATE TABLE company (
+CREATE TABLE companies (
 id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 name VARCHAR(32) NOT NULL,
 taxnumber VARCHAR(13),
 salestaxid VARCHAR(14),
+taxfree BOOLEAN NOT NULL DEFAULT false,
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
+creuser VARCHAR(8) NOT NULL,
+credat TIMESTAMP NOT NULL DEFAULT NOW(),
+lmuser VARCHAR(8) NOT NULL,
+lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating table contactpersons"
+\echo "EXECUTE: CREATE TABLE contactpersons ("
+\echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
+\echo "         title title_type NOT NULL,"
+\echo "         firstname VARCHAR(32) NOT NULL,"
+\echo "         lastname VARCHAR(32) NOT NULL,"
+\echo "         callnumber VARCHAR(16),"
+\echo "         email VARCHAR(32),"
+\echo "         company_id INTEGER NOT NULL REFERENCES companies (id),"
+\echo "         creuser VARCHAR(8) NOT NULL,"
+\echo "         credat TIMESTAMP NOT NULL DEFAULT NOW(),"
+\echo "         lmuser VARCHAR(8) NOT NULL,"
+\echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
+\echo "         );"
+CREATE TABLE contactpersons (
+id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+title title_type NOT NULL,
+firstname VARCHAR(32) NOT NULL,
+lastname VARCHAR(32) NOT NULL,
+callnumber VARCHAR(16),
+email VARCHAR(32),
+company_id INTEGER NOT NULL REFERENCES companies (id),
+creuser VARCHAR(8) NOT NULL,
+credat TIMESTAMP NOT NULL DEFAULT NOW(),
+lmuser VARCHAR(8) NOT NULL,
+lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating table conditions"
+\echo "EXECUTE: CREATE TABLE conditions ("
+\echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
+\echo "         discount NUMERIC(5,2) NOT NULL CHECK (discount <= 100.00 AND discount >= 0.00),"
+\echo "         cop cop_type,"
+\echo "         cod cod_type,"
+\echo "         contact_id INTEGER NOT NULL REFERENCES contacts (id),"
+\echo "         creuser VARCHAR(8) NOT NULL,"
+\echo "         credat TIMESTAMP NOT NULL DEFAULT NOW(),"
+\echo "         lmuser VARCHAR(8) NOT NULL,"
+\echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
+\echo "         );"
+CREATE TABLE conditions (
+id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+discount NUMERIC(5,2) NOT NULL CHECK (discount <= 100.00 AND discount >= 0.00),
+cop cop_type,
+cod cod_type,
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
+creuser VARCHAR(8) NOT NULL,
+credat TIMESTAMP NOT NULL DEFAULT NOW(),
+lmuser VARCHAR(8) NOT NULL,
+lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating table persons"
+\echo "EXECUTE: CREATE TABLE persons ("
+\echo "         id SERIAL PRIMARY KEY,"
+\echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
+\echo "         title title_type NOT NULL,"
+\echo "         firstname VARCHAR(32) NOT NULL,"
+\echo "         lastname VARCHAR(32) NOT NULL,"
+\echo "         contact_id INTEGER NOT NULL REFERENCES contacts (id),"
+\echo "         creuser VARCHAR(8) NOT NULL,"
+\echo "         credat TIMESTAMP NOT NULL DEFAULT NOW(),"
+\echo "         lmuser VARCHAR(8) NOT NULL,"
+\echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
+\echo "         );"
+CREATE TABLE persons (
+id SERIAL PRIMARY KEY,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+title title_type NOT NULL,
+firstname VARCHAR(32) NOT NULL,
+lastname VARCHAR(32) NOT NULL,
 contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -291,9 +470,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 
--- Inserting example data
-\copy invoice (id, inv_num,inv_date,inv_type,total) from '/projects/steady_v1.0/ressources/example_data/invoices.csv' CSV;
-\copy lineitem (id, invoice_id,line_num,net_amount,vat,gross_amount) from '/projects/steady_v1.0/ressources/example_data/lineitems.csv' CSV;
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE invoice TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE lineitem TO steady_user;
+-- Inserting example data
+--\copy invoice (id, inv_num,inv_date,inv_type,total) from '/projects/steady_v1.0/ressources/example_data/invoices.csv' CSV;
+--\copy lineitem (id, invoice_id,line_num,net_amount,vat,gross_amount) from '/projects/steady_v1.0/ressources/example_data/lineitems.csv' CSV;
+
+--GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE invoice TO steady_user;
+--GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE lineitem TO steady_user;
