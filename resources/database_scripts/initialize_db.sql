@@ -107,7 +107,7 @@ CREATE TYPE cod_type AS ENUM ('Lieferung frei Haus.');
 \echo "INFO: Creating table countries"
 \echo "EXECUTE: CREATE TABLE countries ("
 \echo "         id BIGSERIAL PRIMARY KEY,"
-\echo "         code VARCHAR(2) NOT NULL,"
+\echo "         code CHAR(2) NOT NULL,"
 \echo "         country VARCHAR(32) NOT NULL,"
 \echo "         creuser VARCHAR(8) NOT NULL,"
 \echo "         credat TIMESTAMP NOT NULL DEFAULT NOW(),"
@@ -116,7 +116,7 @@ CREATE TYPE cod_type AS ENUM ('Lieferung frei Haus.');
 \echo "         );"
 CREATE TABLE countries (
 id SMALLSERIAL PRIMARY KEY,
-code VARCHAR(2) NOT NULL,
+code CHAR(2) NOT NULL,
 country VARCHAR(32) NOT NULL,
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -487,5 +487,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conditions TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE persons TO steady_user;
 
 -- Inserting example data
---\copy invoice (id, inv_num,inv_date,inv_type,total) from '/projects/steady_v1.0/ressources/example_data/invoices.csv' CSV;
---\copy lineitem (id, invoice_id,line_num,net_amount,vat,gross_amount) from '/projects/steady_v1.0/ressources/example_data/lineitems.csv' CSV;
+\copy countries (code, country, creuser, lmuser) from '/projects/steady_v1.0/resources/example_data/countries.csv' CSV;
+\copy currencies (code, currency,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/currencies.csv' CSV;
+\copy clients (name, country_id,language,currency_id,timezone,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/clients.csv' CSV;
