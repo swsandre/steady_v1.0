@@ -297,8 +297,8 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Creating table webadresses"
-\echo "EXECUTE: CREATE TABLE webadresses ("
+\echo "INFO: Creating table webaddresses"
+\echo "EXECUTE: CREATE TABLE webaddresses ("
 \echo "         id BIGSERIAL PRIMARY KEY,"
 \echo "         clients_id INTEGER NOT NULL REFERENCES clients (id),"
 \echo "         type email_type NOT NULL,"
@@ -309,11 +309,11 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         lmuser VARCHAR(8) NOT NULL,"
 \echo "         lastmodified TIMESTAMP NOT NULL DEFAULT NOW()"
 \echo "         );"
-CREATE TABLE webadresses (
+CREATE TABLE webaddresses (
 id BIGSERIAL PRIMARY KEY,
 clients_id INTEGER NOT NULL REFERENCES clients (id),
-type email_type NOT NULL,
-email VARCHAR(32) NOT NULL,
+type web_type NOT NULL,
+webaddress VARCHAR(32) NOT NULL,
 contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -479,7 +479,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE clients TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE addresses TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE callnumbers TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE webadresses TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE webaddresses TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE bankaccounts TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE companies TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contactpersons TO steady_user;
@@ -490,3 +490,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE persons TO steady_user;
 \copy countries (code, country, creuser, lmuser) from '/projects/steady_v1.0/resources/example_data/countries.csv' CSV;
 \copy currencies (code, currency,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/currencies.csv' CSV;
 \copy clients (name, country_id,language,currency_id,timezone,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/clients.csv' CSV;
+\copy contacts (clients_id, note,customerid,supplierid,cidatsupplier,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/contacts.csv' CSV;
+\copy addresses (clients_id, type,addr_additional,street_postbox,postalcode,city,country_id,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/addresses.csv' CSV;
+\copy callnumbers (clients_id, type,number,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/callnumbers.csv' CSV;
+\copy emails (clients_id, type,email,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/emails.csv' CSV;
+\copy webaddresses (clients_id, type,webaddress,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/webaddresses.csv' CSV;
+\copy bankaccounts (clients_id, iban,bic,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/bankaccounts.csv' CSV;
+\copy companies (clients_id, name,taxnumber,salestaxid,taxfree,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/companies.csv' CSV;
+\copy contactpersons (clients_id, title,firstname,lastname,callnumber,email,company_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/contactpersons.csv' CSV;
