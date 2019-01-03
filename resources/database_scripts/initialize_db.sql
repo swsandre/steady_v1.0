@@ -5,6 +5,8 @@
 -- 08.12.2018 Andre Hahn - Initial creation. Create table invoice, lineitem. Populating these tables with copy commands.
 -- 31.12.2018 Andre Hahn - Initial creation of the table responsible for contact management.
 -- 03.01.2019 Andre Hahn - Test data created and \copy commands added to the script. Schemas bmdata, contacts, config added.
+-- 03.01.2019 Andre Hahn - Renamed column countries.country to countries.name and currencies.currency to currencies.name.
+-- 03.01.2019 Andre Hahn - Changed the SCHEMA search_path to config, bmdata, contacts, public.
 
 -- Start psql with the option -s for single-step mode
 -- run this script with "\i pathto/initialize_db.sql"
@@ -64,9 +66,9 @@ CREATE SCHEMA config AUTHORIZATION steady_user;
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
-\echo "INFO: Connecting to steady_dev"
-\echo "EXECUTE: \c steady_dev"
-\c steady_dev
+\echo "INFO: Adding the new schemas to the search path."
+\echo "EXECUTE: SET search_path TO config, bmdata, contacts, public;"
+SET search_path TO config, bmdata, contacts, public;
 
 \echo
 \echo
@@ -119,7 +121,7 @@ CREATE TYPE contacts.title_type AS ENUM ('Herr', 'Frau');
 CREATE TABLE bmdata.countries (
 id SMALLSERIAL PRIMARY KEY,
 code CHAR(2) NOT NULL,
-country VARCHAR(32) NOT NULL,
+name VARCHAR(32) NOT NULL,
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -142,7 +144,7 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 CREATE TABLE bmdata.currencies (
 id SMALLSERIAL PRIMARY KEY,
 code CHAR(3) NOT NULL,
-currency VARCHAR(32) NOT NULL,
+name VARCHAR(32) NOT NULL,
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -168,9 +170,9 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 CREATE TABLE config.clients (
 id BIGSERIAL PRIMARY KEY,
 name VARCHAR(128) NOT NULL,
-country_id SMALLINT NOT NULL REFERENCES bmdata.countries (id),
+country_id SMALLINT NOT NULL REFERENCES countries (id),
 language VARCHAR(32) NOT NULL,
-currency_id SMALLINT NOT NULL REFERENCES bmdata.currencies (id),
+currency_id SMALLINT NOT NULL REFERENCES currencies (id),
 timezone VARCHAR(64) NOT NULL, -- Wie sieht der Wert in diesem Feld aus?
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -196,7 +198,7 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.contacts (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 note TEXT,
 customerid VARCHAR(10),   -- customerid must be generated. Must be mandant specific.
 supplierid VARCHAR(10),   -- supplierid must be generated. Must be mandant specific.
@@ -228,14 +230,14 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.addresses (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
-type contacts.addr_type NOT NULL,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+type addr_type NOT NULL,
 addr_additional VARCHAR(20),
 street_postbox VARCHAR(32),
 postalcode VARCHAR(10),
 city VARCHAR(32),
-country_id SMALLINT NOT NULL REFERENCES bmdata.countries (id),
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+country_id SMALLINT NOT NULL REFERENCES countries (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -259,10 +261,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.callnumbers (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
-type contacts.callnumber_type NOT NULL,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+type callnumber_type NOT NULL,
 number VARCHAR(16) NOT NULL,
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -286,10 +288,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.emails (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
-type contacts.email_type NOT NULL,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+type email_type NOT NULL,
 email VARCHAR(32) NOT NULL CHECK (position('@' in email) > 0),
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -313,10 +315,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.webaddresses (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
-type contacts.web_type NOT NULL,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+type web_type NOT NULL,
 webaddress VARCHAR(32) NOT NULL,
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -340,10 +342,10 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.bankaccounts (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 iban VARCHAR(34) NOT NULL,
 bic VARCHAR(11) NOT NULL,
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -368,12 +370,12 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.companies (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 name VARCHAR(32) NOT NULL,
 taxnumber VARCHAR(13),
 salestaxid VARCHAR(14),
 taxfree BOOLEAN NOT NULL DEFAULT false,
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -400,13 +402,13 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.contactpersons (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
-title contacts.title_type NOT NULL,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+title title_type NOT NULL,
 firstname VARCHAR(32) NOT NULL,
 lastname VARCHAR(32) NOT NULL,
 callnumber VARCHAR(16),
 email VARCHAR(32),
-company_id INTEGER NOT NULL REFERENCES contacts.companies (id),
+company_id INTEGER NOT NULL REFERENCES companies (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -431,11 +433,11 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.conditions (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
+clients_id INTEGER NOT NULL REFERENCES clients (id),
 discount NUMERIC(5,2) NOT NULL CHECK (discount <= 100.00 AND discount >= 0.00),
 cop VARCHAR(16),
 cod VARCHAR(16),
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -460,11 +462,11 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo "         );"
 CREATE TABLE contacts.persons (
 id BIGSERIAL PRIMARY KEY,
-clients_id INTEGER NOT NULL REFERENCES config.clients (id),
-title contacts.title_type NOT NULL,
+clients_id INTEGER NOT NULL REFERENCES clients (id),
+title title_type NOT NULL,
 firstname VARCHAR(32) NOT NULL,
 lastname VARCHAR(32) NOT NULL,
-contact_id INTEGER NOT NULL REFERENCES contacts.contacts (id),
+contact_id INTEGER NOT NULL REFERENCES contacts (id),
 creuser VARCHAR(8) NOT NULL,
 credat TIMESTAMP NOT NULL DEFAULT NOW(),
 lmuser VARCHAR(8) NOT NULL,
@@ -475,18 +477,18 @@ lastmodified TIMESTAMP NOT NULL DEFAULT NOW()
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Grant steady_user SELECT, INSERT, UPDATE, DELETE to all created tables."
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE bmdata.countries TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE bmdata.currencies TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE config.clients TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.contacts TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.addresses TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.callnumbers TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.webaddresses TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.bankaccounts TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.companies TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.contactpersons TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.conditions TO steady_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.persons TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE countries TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE currencies TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE clients TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE addresses TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE callnumbers TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE webaddresses TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE bankaccounts TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE companies TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contactpersons TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conditions TO steady_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE persons TO steady_user;
 
 
 \echo
@@ -495,31 +497,31 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contacts.persons TO steady_user;
 \echo "INFO: Populate tables with test data."
 \echo
 \echo "TABLE: countries"
-\copy bmdata.countries (code, country, creuser, lmuser) from '/projects/steady_v1.0/resources/example_data/countries.csv' CSV;
+\copy countries (code, name, creuser, lmuser) from '/projects/steady_v1.0/resources/example_data/countries.csv' CSV;
 \echo "TABLE: currencies"
-\copy bmdata.currencies (code, currency,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/currencies.csv' CSV;
+\copy currencies (code, name,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/currencies.csv' CSV;
 \echo "TABLE: clients"
-\copy config.clients (name, country_id,language,currency_id,timezone,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/clients.csv' CSV;
+\copy clients (name, country_id,language,currency_id,timezone,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/clients.csv' CSV;
 \echo "TABLE: contacts"
-\copy contacts.contacts (clients_id, note,customerid,supplierid,cidatsupplier,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/contacts.csv' CSV;
+\copy contacts (clients_id, note,customerid,supplierid,cidatsupplier,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/contacts.csv' CSV;
 \echo "TABLE: addresses"
-\copy contacts.addresses (clients_id, type,addr_additional,street_postbox,postalcode,city,country_id,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/addresses.csv' CSV;
+\copy addresses (clients_id, type,addr_additional,street_postbox,postalcode,city,country_id,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/addresses.csv' CSV;
 \echo "TABLE: callnumbers"
-\copy contacts.callnumbers (clients_id, type,number,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/callnumbers.csv' CSV;
+\copy callnumbers (clients_id, type,number,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/callnumbers.csv' CSV;
 \echo "TABLE: emails"
-\copy contacts.emails (clients_id, type,email,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/emails.csv' CSV;
+\copy emails (clients_id, type,email,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/emails.csv' CSV;
 \echo "TABLE: webaddresses"
-\copy contacts.webaddresses (clients_id, type,webaddress,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/webaddresses.csv' CSV;
+\copy webaddresses (clients_id, type,webaddress,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/webaddresses.csv' CSV;
 \echo "TABLE: bankaccounts"
-\copy contacts.bankaccounts (clients_id, iban,bic,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/bankaccounts.csv' CSV;
+\copy bankaccounts (clients_id, iban,bic,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/bankaccounts.csv' CSV;
 \echo "TABLE: companies"
-\copy contacts.companies (clients_id, name,taxnumber,salestaxid,taxfree,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/companies.csv' CSV;
+\copy companies (clients_id, name,taxnumber,salestaxid,taxfree,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/companies.csv' CSV;
 \echo "TABLE: contactpersons"
-\copy contacts.contactpersons (clients_id, title,firstname,lastname,callnumber,email,company_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/contactpersons.csv' CSV;
+\copy contactpersons (clients_id, title,firstname,lastname,callnumber,email,company_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/contactpersons.csv' CSV;
 \echo "TABLE: conditions"
-\copy contacts.conditions (clients_id, discount,cop,cod,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/conditions.csv' CSV;
+\copy conditions (clients_id, discount,cop,cod,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/conditions.csv' CSV;
 \echo "TABLE: persons"
-\copy contacts.persons (clients_id, title,firstname,lastname,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/persons.csv' CSV;
+\copy persons (clients_id, title,firstname,lastname,contact_id,creuser,lmuser) from '/projects/steady_v1.0/resources/example_data/persons.csv' CSV;
 
 \echo
 \echo
