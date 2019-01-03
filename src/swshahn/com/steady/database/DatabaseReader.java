@@ -1,7 +1,5 @@
 package swshahn.com.steady.database;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.sql.*;
 
 /**

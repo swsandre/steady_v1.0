@@ -4,19 +4,19 @@ import java.io.Serializable;
 
 /**
  * Author: Rene Hahn
- * Description: Class represents the country model. This model class can be used throughout all
+ * Description: Class represents the currency model. This model class can be used throughout all
  * layers, the data layer, the controller layer and the view layer.
  *
  * Change Log:
- * 02.01.2019, Rene Hahn - Initial Creation
+ * 03.01.2019, Rene Hahn - Initial Creation
  */
 
-public class Country extends BaseEntity implements Serializable {
+public class Currency extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /* Properties */
     private String code;
-    private String country;
+    private String currency;
 
     /* Getters and Setters */
     public String getCode() {
@@ -27,19 +27,19 @@ public class Country extends BaseEntity implements Serializable {
         this.code = code;
     }
 
-    public String getCountry() {
-        return country;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     /* Object overrides */
     @Override
     public boolean equals(Object other) {
-        return (other instanceof Country) && (super.getId() != null)
-                ? super.getId().equals(((Country)other).getId())
+        return (other instanceof Currency) && (super.getId() != null)
+                ? super.getId().equals(((Currency)other).getId())
                 : (other == this);
     }
 
@@ -50,10 +50,10 @@ public class Country extends BaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Country[id=%d,code=%s,country=%s,creuser=%s,credat=%s,lmuser=%s,lastmodified=%s]",
+        return String.format("Currency[id=%d,code=%s,currency=%s,creuser=%s,credat=%s,lmuser=%s,lastmodified=%s]",
                 getId(),
                 getCode(),
-                getCountry(),
+                getCurrency(),
                 getCreuser(),
                 getCredat(),
                 getLmuser(),
