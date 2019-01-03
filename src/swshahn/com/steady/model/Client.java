@@ -2,6 +2,14 @@ package swshahn.com.steady.model;
 
 import java.io.Serializable;
 
+/**
+ * Author: Rene Hahn
+ * Description: Class represents the Client model. This model class can be used throughout all
+ * layers, the data layer, the controller layer and the view layer.
+ *
+ * Change Log:
+ * 03.01.2019, Rene Hahn - Initial Creation
+ */
 public class Client extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

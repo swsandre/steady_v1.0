@@ -30,7 +30,7 @@ public class SteadyMain {
         Country country = new Country();
         country.setId(12345L);
         country.setCode("DE");
-        country.setCountry("Germany");
+        country.setName("Germany");
         country.setCreuser("rhahn");
         country.setCredat(new SimpleDateFormat("dd.MM.yyyy").parse("02.01.2019"));
         country.setLmuser("rhahn");
@@ -41,7 +41,7 @@ public class SteadyMain {
         Currency currency = new Currency();
         currency.setId(23456L);
         currency.setCode("EUR");
-        currency.setCurrency("European Euro");
+        currency.setName("European Euro");
         currency.setCreuser("rhahn");
         currency.setCredat(new SimpleDateFormat("dd.MM.yyyy").parse("02.01.2019"));
         currency.setLmuser("rhahn");

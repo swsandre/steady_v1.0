@@ -9,6 +9,7 @@ import java.io.Serializable;
  *
  * Change Log:
  * 03.01.2019, Rene Hahn - Initial Creation
+ * 03.01.2019, Rene Hahn - Property currency changed to name
  */
 
 public class Currency extends BaseEntity implements Serializable {
@@ -16,7 +17,7 @@ public class Currency extends BaseEntity implements Serializable {
 
     /* Properties */
     private String code;
-    private String currency;
+    private String name;
 
     /* Getters and Setters */
     public String getCode() {
@@ -27,12 +28,12 @@ public class Currency extends BaseEntity implements Serializable {
         this.code = code;
     }
 
-    public String getCurrency() {
-        return currency;
+    public String getName() {
+        return name;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setName(String currency) {
+        this.name = name;
     }
 
     /* Object overrides */
@@ -50,10 +51,10 @@ public class Currency extends BaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Currency[id=%d,code=%s,currency=%s,creuser=%s,credat=%s,lmuser=%s,lastmodified=%s]",
+        return String.format("Currency[id=%d,code=%s,name=%s,creuser=%s,credat=%s,lmuser=%s,lastmodified=%s]",
                 getId(),
                 getCode(),
-                getCurrency(),
+                getName(),
                 getCreuser(),
                 getCredat(),
                 getLmuser(),

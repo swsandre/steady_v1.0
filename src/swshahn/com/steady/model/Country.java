@@ -9,6 +9,7 @@ import java.io.Serializable;
  *
  * Change Log:
  * 02.01.2019, Rene Hahn - Initial Creation
+ * 03.01.2019, Rene hahn - Property country changed to name
  */
 
 public class Country extends BaseEntity implements Serializable {
@@ -16,7 +17,7 @@ public class Country extends BaseEntity implements Serializable {
 
     /* Properties */
     private String code;
-    private String country;
+    private String name;
 
     /* Getters and Setters */
     public String getCode() {
@@ -27,12 +28,12 @@ public class Country extends BaseEntity implements Serializable {
         this.code = code;
     }
 
-    public String getCountry() {
-        return country;
+    public String getName() {
+        return name;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /* Object overrides */
@@ -50,10 +51,10 @@ public class Country extends BaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Country[id=%d,code=%s,country=%s,creuser=%s,credat=%s,lmuser=%s,lastmodified=%s]",
+        return String.format("Country[id=%d,code=%s,name=%s,creuser=%s,credat=%s,lmuser=%s,lastmodified=%s]",
                 getId(),
                 getCode(),
-                getCountry(),
+                getName(),
                 getCreuser(),
                 getCredat(),
                 getLmuser(),
