@@ -1,6 +1,7 @@
 package swshahn.com.steady.main;
 import swshahn.com.steady.database.DatabaseConnection;
 import swshahn.com.steady.database.DatabaseReader;
+import swshahn.com.steady.database.dao.DAOProperties;
 import swshahn.com.steady.model.Client;
 import swshahn.com.steady.model.Country;
 import swshahn.com.steady.model.Currency;
@@ -26,6 +27,17 @@ public class SteadyMain {
         DatabaseReader dbr = new DatabaseReader();
         dbr.getInvoiceByNumber(1);
         */
+
+        DAOProperties properties = new DAOProperties("steady.jdbc");
+        String url = properties.getProperty("url", true);
+        String driver = properties.getProperty("driver", true);
+        String username = properties.getProperty("username", true);
+        String password = properties.getProperty("password", true);
+
+        System.out.println("Property url: " + url);
+        System.out.println("Property driver: " + driver);
+        System.out.println("Property username: " + username);
+        System.out.println("Property password: " + password);
 
         Country country = new Country();
         country.setId(12345L);
