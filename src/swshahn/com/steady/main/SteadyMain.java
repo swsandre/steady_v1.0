@@ -27,6 +27,8 @@ public class SteadyMain {
         DatabaseReader dbr = new DatabaseReader();
         dbr.getInvoiceByNumber(1);
         */
+        String stmt = "Herr Frank " + null;
+        System.out.println(stmt);
 
         DAOProperties properties = new DAOProperties("steady.jdbc");
         String url = properties.getProperty("url", true);
