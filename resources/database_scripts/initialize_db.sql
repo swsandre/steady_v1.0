@@ -41,15 +41,15 @@ DROP USER IF EXISTS steady_user;
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Create user steady_user"
-\echo "EXECUTE: CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 2 PASSWORD 'start123';"
-CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 2 PASSWORD 'start123';
+\echo "EXECUTE: CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 10 PASSWORD 'start123';"
+CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 10 PASSWORD 'start123';
 
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Create database steady_dev"
-\echo "EXECUTE: CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 2;"
-CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 2;
+\echo "EXECUTE: CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 10;"
+CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 10;
 
 \echo
 \echo
@@ -492,6 +492,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE companies TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contactpersons TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE conditions TO steady_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE persons TO steady_user;
+
+GRANT USAGE ON ALL sequences IN schema config TO steady_user;
+GRANT USAGE ON ALL sequences IN schema bmdata TO steady_user;
+GRANT USAGE ON ALL sequences IN schema contacts TO steady_user;
 
 
 \echo
