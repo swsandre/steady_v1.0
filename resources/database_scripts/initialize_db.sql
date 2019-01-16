@@ -10,6 +10,7 @@
 -- 04.01.2019 Andre Hahn - Changed the datatypes of contacts.customerid and contacts.supplierid from VARCHAR(10) to INTEGER.
 --                         It makes it easier to increment the id in the stored procedure insertContact. And change the copy commands
 --                         to handle null values (NULL as '').
+-- 16.01.2019 Andre Hahn - Created the table actionlog. And used the metacommand \p for printing the last buffer (statement).
 
 -- Start psql with the option -s for single-step mode
 -- run this script with "\i pathto/initialize_db.sql"
@@ -26,30 +27,30 @@
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Drop database steady_dev if exists"
-\echo "EXECUTE: DROP DATABASE IF EXISTS steady_dev;"
 DROP DATABASE IF EXISTS steady_dev;
+\p
 
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Drop user steady_user if exists"
-\echo "EXECUT: DROP USER IF EXISTS steady_user;"
 DROP USER IF EXISTS steady_user;
+\p
 
 
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Create user steady_user"
-\echo "EXECUTE: CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 10 PASSWORD 'start123';"
 CREATE USER steady_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 10 PASSWORD 'start123';
+\p
 
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Create database steady_dev"
-\echo "EXECUTE: CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 10;"
 CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 10;
+\p
 
 \echo
 \echo
@@ -65,13 +66,14 @@ CREATE DATABASE steady_dev WITH OWNER=steady_user CONNECTION LIMIT = 10;
 CREATE SCHEMA bmdata AUTHORIZATION steady_user;
 CREATE SCHEMA contacts AUTHORIZATION steady_user;
 CREATE SCHEMA config AUTHORIZATION steady_user;
+CREATE SCHEMA tmdata AUTHORIZATION steady_user;
 
 \echo
 \echo
 \echo "---------------------------------------------------------------------------------------"
 \echo "INFO: Adding the new schemas to the search path."
 \echo "EXECUTE: SET search_path TO config, bmdata, contacts, public;"
-SET search_path TO config, bmdata, contacts, public;
+SET search_path TO config,tmdata, bmdata, contacts, public;
 
 \echo
 \echo
@@ -107,6 +109,27 @@ CREATE TYPE contacts.web_type AS ENUM ('Webseite', 'Skype', 'Messenger', 'Blog',
 \echo "INFO: Creating enum type title_type"
 \echo "EXECUTE: CREATE TYPE contacts.title_type AS ENUM ('Herr', 'Frau');"
 CREATE TYPE contacts.title_type AS ENUM ('Herr', 'Frau');
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating enum type action_type"
+\echo "EXECUTE: CREATE TYPE tmdata.action_type AS ENUM ('INSERT', 'UPDATE', 'DELETE');"
+CREATE TYPE tmdata.action_type AS ENUM ('INSERT', 'UPDATE', 'DELETE');
+
+\echo
+\echo
+\echo "---------------------------------------------------------------------------------------"
+\echo "INFO: Creating table actionlog"
+CREATE TABLE tmdata.actionlog (
+id BIGSERIAL PRIMARY KEY,
+logts TIMESTAMP NOT NULL DEFAULT NOW(),
+action_user VARCHAR(8) NOT NULL,
+action action_type NOT NULL,
+sql_statement VARCHAR(512) NOT NULL
+);
+\p
+
 
 \echo
 \echo
