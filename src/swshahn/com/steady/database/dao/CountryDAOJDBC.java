@@ -51,12 +51,12 @@ public class CountryDAOJDBC implements CountryDAO {
     }
 
     @Override
-    public Country find(String code) throws DAOException {
+    public Country findByCode(String code) throws DAOException {
         return find(SQL_FIND_BY_CODE, code);
     }
 
     @Override
-    public Country find(String name) throws DAOException {
+    public Country findByName(String name) throws DAOException {
         return find(SQL_FIND_BY_NAME, name);
     }
 
