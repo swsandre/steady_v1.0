@@ -4,6 +4,7 @@
 -- Changes:
 -- 04.01.2019 Andre Hahn - Initial creation.
 -- 09.01.2019 Andre Hahn - Creating the function insertcontact.
+-- 17.01.2019 Andre Hahn - Writing actionlog entry.
 
 CREATE FUNCTION contacts.insertcontact(p_client_id INTEGER, p_note TEXT, p_cidatsupplier VARCHAR(10), p_creuser VARCHAR(8), p_lmuser VARCHAR(8), p_cors CHAR(1)) RETURNS BIGINT AS $$
 DECLARE
@@ -43,14 +44,9 @@ BEGIN
                         ',' || coalesce('''' || p_creuser || '''', 'NULL') || ',' || coalsece('''' || p_lmuser || '''', 'NULL') || ') RETURNING id ;';
 
     END IF;
+    -- Wrtiting command to acctionlog
+    INSERT INTO tmdata.actionlog(action_user, action, sql_statement) VALUES (p_creuser, 'INSERT', v_stmt);
     EXECUTE v_stmt INTO v_id;
     RETURN v_id;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-INSERT INTO contacts.contacts (clients_id, note, customerid, supplierid, cidatsupplier, creuser, lmuser) VALUES (2, 'TEST', 10007, NULL, NULL, 'ahahn', 'ahahn');
-commit;
-
-select contacts.insertcontact(2,'TEST',NULL,'ahahn','ahahn','C');
